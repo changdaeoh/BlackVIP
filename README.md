@@ -16,7 +16,7 @@
 
 ## Research Highlights
 <p align="center">
-<img src="docs/blackvip_framework.png" alt= "" width="60%" height="60%">
+<img src="docs/blackvip_framework.png" alt= "" width="90%" height="90%">
 </p>
 
 * **Input-Dependent Dynamic Visual Prompting:** To our best knowledge, this is the first paper that explores the input-dependent visual prompting on black-box settings. For this, we devise `Coordinator`, which reparameterizes the prompt as an autoencoder to handle the input-dependent prompt with tiny parameters.
