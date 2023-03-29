@@ -39,28 +39,80 @@
   * two synthetic datasets - [`Biased MNIST`, `Loc-MNIST`]
   * 14 transfer learning benchmarks - [`Caltech101`, `OxfordPets`, `StanfordCars`, `Flowers102`, `Food101`, `FGVCAircraft`, `SUN397`, `DTD`, `SVHN`, `EuroSAT`, `Resisc45`, `CLEVR`, `UCF101`, `ImageNet`]
 * **ablation study** (Tab. 5 and Tab. 6 of paper)
-  * varying backbone
-  * varying coordinator weights, spsa vs. spsa-gc
+  * varying architectures (coordinator, target model)
+  * varying coordinator weights and optimizers
 
 <br/>
 
-## Installation & Requriments
-```
-soon :)
+## Setup
+* Run the following commands for set the environment.
+  * Note that we slightly modifed the [Dassl.pytorch](https://github.com/KaiyangZhou/Dassl.pytorch) as my_dassl for flexible experiments.
+```shell
+# Clone this repo
+git clone https://github.com/changdaeoh/BlackVIP.git
+cd BlackVIP
+
+# Create a conda environment
+conda create -y -n blackvip python=3.8
+
+# Activate the environment
+conda activate blackvip
+
+# Install torch and torchvision
+# Please refer to https://pytorch.org/ if you need a different cuda version
+conda install pytorch==1.12.1 torchvision==0.13.1 cudatoolkit=11.6 -c pytorch -c conda-forge
+
+# Install dependencies
+cd my_dassl
+pip install -r requirements.txt
+
+# Install additional requirements
+cd ..
+pip install -r requirements.txt
 ```
 
 <br/>
 
 ## Data preparation
-```
-soon :)
-```
+* To prepare the following 11 datasets (adopted by [CoOp](https://github.com/KaiyangZhou/CoOp)), please follow the instruction from https://github.com/KaiyangZhou/CoOp/blob/main/DATASETS.md
+  * **Caltech101, OxfordPets, StanfordCars, Flowers102, Food101, FGVCAircraft, SUN397, DTD, EuroSAT, UCF101, and ImageNet**
+  * We use the same few-shot split of **CoOp** for above 11 datasets.
+* To prepare three datasets (adopted by [VP](https://github.com/hjbahng/visual_prompting)), the instructions are below: 
+  * **SVHN**:
+    * Create a folder named `svhn/` under `$DATA`.
+    * To download the dataset, run `BlackVIP/datasets/svhn_dl.py` after replacing the DATAPATH in 44 line as yours.
+    * Download split_mlai_SVHN.json from [this link](https://drive.google.com/file/d/1dnjnMX-sr7FClb6EUywc-tNx6e1YaGpu/view?usp=sharing) and put it under `$DATA/svhn`.
+  * **Resisc45**: 
+    * Create a folder named `resisc45/` under `$DATA`.
+    * Download `NWPU-RESISC45.rar` from https://onedrive.live.com/?authkey=%21AHHNaHIlzp%5FIXjs&id=5C5E061130630A68%21107&cid=5C5E061130630A68&parId=root&parQt=sharedby&o=OneUp and extract the file under `$DATA/resisc45`.
+    * Download split_mlai_Resisc45.json from [this link](https://drive.google.com/file/d/1QTThkyN-p58hAxN7wpBntO4CncTf9qtF/view?usp=share_link) and put it under `$DATA/resisc45`.
+  * **CLEVR**:
+    * Download `CLEVR_v1.0.zip` from https://dl.fbaipublicfiles.com/clevr/CLEVR_v1.0.zip and extract the file under $DATA.
+    * Download split_mlai_CLEVR.json from [this link](https://drive.google.com/file/d/1L4DjruSBez66W_Uezyo2mN7siDORkgeO/view?usp=share_link) and put it under `$DATA/CLEVR_v1.0`.
+  * We provide fixed train/val/test splits for these three datasets to ensure reproducibility and fair comparison for future work.
 
 <br/>
 
 ## Run
+### transfer learning benchmarks
+* Move to `BlackVIP/scripts/method_name` directory
+* Across 14 benchmark datasets and four methods, you can refer [this docs](docs/configuration.md) containing the hyperparameter table
+* On the targeted dataset, run the commands with dataset-specific configs as below:
+```shell
+# for BlackVIP, specify {1:dataset, 2:epoch, 3:moms, 4:spsa_gamma, 5:spsa_c, 6:p_eps}
+sh tl_bench.sh svhn 5000 0.9 0.2 0.005 1.0
 ```
+
+
+### synthetic datasets
+```shell
 soon :)
+```
+
+### ablation study
+```shell
+# for BlackVIP, specify {1:coordinator_backbone, 2:target_backbone, 3:spsa_alpha, 4:moms, 5:spsa_gamma, 6:spsa_c, 7:p_eps}
+sh ablation_arch.sh rn50 dino-resnet-50 0.5 0.9 0.2 0.01 0.3
 ```
 
 <br/>

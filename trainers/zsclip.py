@@ -26,7 +26,7 @@ CUSTOM_TEMPLATES = {
     "SVHN": "This is a photo of a {}",
     "Resisc45": "This is a photo of a {}",
     "CLEVR": "This is a photo of {} objects",
-    "LoMNIST": "This is a photo of {}",
+    "LocMNIST": "This is a photo of {}",
     "ColourBiasedMNIST":"This is a photo of {}",
 }
 

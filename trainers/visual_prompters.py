@@ -10,7 +10,7 @@ from torchvision import transforms
 import numpy as np
 import os
 
-from transformers import ViTFeatureExtractor, ViTModel, ViTMAEModel, ViTForImageClassification
+from transformers import ViTFeatureExtractor, ResNetModel, ViTModel, ViTMAEModel, ViTForImageClassification
 import wandb
 from PIL import Image
 from trainers.utils import temperatured_sig, temperatured_tanh, clip_normalization, clip_clipping, vis_p_vis

@@ -21,7 +21,7 @@ import datasets.svhn
 import datasets.resisc45
 import datasets.clevr
 
-import datasets.lomnist
+import datasets.locmnist
 import datasets.colour_biased_mnist
 
 import trainers.coop

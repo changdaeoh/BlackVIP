@@ -3,14 +3,14 @@ cd ../..
 DATA=/YOURPATH
 TRAINER=BLACKVIP
 SHOTS=16
-CFG=vit_b16
+CFG=$1
 ptb=vit-mae-base
 
-DATASET=$1
-ep=$2
+DATASET=eurosat
+ep=5000
 
 spsa_os=1.0
-alpha=0.4
+alpha=$2
 spsa_a=0.01
 
 b1=$3
@@ -41,6 +41,6 @@ do
     TRAINER.BLACKVIP.SPSA_PARAMS [$spsa_os,$spsa_c,$spsa_a,$alpha,$gamma] \
     TRAINER.BLACKVIP.OPT_TYPE $opt_type \
     TRAINER.BLACKVIP.MOMS $b1 \
-    TRAINER.BLACKVIP.P_EPS $p_eps
-    #fi
+    TRAINER.BLACKVIP.P_EPS $p_eps \
+    TRAINER.BLACKVIP.SRC_DIM 1568
 done

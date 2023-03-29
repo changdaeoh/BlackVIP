@@ -1,26 +1,28 @@
 #!/bin/bash
 cd ../..
 DATA=/YOURPATH
-DATASET=$1
 TRAINER=BLACKVIP
 SHOTS=16
-CFG=$2
-ep=2
+CFG=$1
+ptb=dino-resnet-50
+
+DATASET=eurosat
+ep=5000
 
 spsa_os=1.0
-
-b1=0.9
-alpha=0.4
-gamma=$3
+alpha=$2
 spsa_a=0.01
-spsa_c=$4
-p_eps=$5
+
+b1=$3
+gamma=$4
+spsa_c=$5
+p_eps=$6
 
 opt_type='spsa-gc'
 
-for SEED in 1
+for SEED in 1 2 3
 do
-    DIR=output/${DATASET}/${TRAINER}/${CFG}/shot${SHOTS}_ep${ep}/${opt_type}_b1${b1}/a${alpha}_g${gamma}_sa${spsa_a}_sc${spsa_c}_eps${p_eps}/seed${SEED}
+    DIR=output/${DATASET}/${TRAINER}/${ptb}_${CFG}/shot${SHOTS}_ep${ep}/${opt_type}_b1${b1}/a${alpha}_g${gamma}_sa${spsa_a}_sc${spsa_c}_eps${p_eps}/seed${SEED}
     # if [ -d "$DIR" ]; then
     #     echo "Oops! The results exist at ${DIR} (so skip this job)"
     # else
@@ -35,11 +37,10 @@ do
     DATASET.NUM_SHOTS ${SHOTS} \
     DATASET.SUBSAMPLE_CLASSES all \
     OPTIM.MAX_EPOCH $ep \
-    TRAINER.BLACKVIP.METHOD 'coordinator_init' \
-    TRAINER.BLACKVIP.E_OUT_DIM 32 \
+    TRAINER.BLACKVIP.PT_BACKBONE $ptb \
     TRAINER.BLACKVIP.SPSA_PARAMS [$spsa_os,$spsa_c,$spsa_a,$alpha,$gamma] \
     TRAINER.BLACKVIP.OPT_TYPE $opt_type \
     TRAINER.BLACKVIP.MOMS $b1 \
-    TRAINER.BLACKVIP.P_EPS $p_eps
-    #fi
+    TRAINER.BLACKVIP.P_EPS $p_eps \
+    TRAINER.BLACKVIP.SRC_DIM 3136
 done

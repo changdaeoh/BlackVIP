@@ -33,7 +33,7 @@ TRAINER:
     PT_BACKBONE: 'vit-mae-base'
     SRC_DIM: 1568
     E_OUT_DIM: 0
-    SPSA_PARAMS: [1.0,0.01,40.0,0.5,0.1]
+    SPSA_PARAMS: [1.0,0.01,0.01,0.4,0.1]
     OPT_TYPE: "spsa-gc"
     MOMS: 0.9
     SP_AVG: 5

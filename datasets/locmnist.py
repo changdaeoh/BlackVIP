@@ -9,8 +9,8 @@ from .oxford_pets import OxfordPets
 
 
 @DATASET_REGISTRY.register()
-class LoMNIST(DatasetBase):
-    dataset_dir = 'lomnist'
+class LocMNIST(DatasetBase):
+    dataset_dir = 'locmnist'
 
     def __init__(self, cfg):
         root = os.path.abspath(os.path.expanduser(cfg.DATASET.ROOT))
@@ -18,7 +18,7 @@ class LoMNIST(DatasetBase):
         self.image_dir = self.dataset_dir
         self.train_image_dir = os.path.join(self.dataset_dir, 'train')
         self.test_image_dir = os.path.join(self.dataset_dir, 'test')
-        self.split_path = os.path.join(self.dataset_dir, "split_LoMNIST.json")
+        self.split_path = os.path.join(self.dataset_dir, "split_LocMNIST.json")
         self.split_fewshot_dir = os.path.join(self.dataset_dir, 'split_fewshot')
         mkdir_if_missing(self.split_fewshot_dir)
 

@@ -13,28 +13,23 @@ INPUT:
   TRANSFORMS: ["random_resized_crop", "random_flip", "normalize"]
 
 OPTIM:
-  NAME: "sgd"
-  LR: 0.5
-  MOMENTUM: 0.9
-  WEIGHT_DECAY: 0.0
-  MAX_EPOCH: 500
-  LR_SCHEDULER: "cosine"
-  WARMUP_EPOCH: 50
-  WARMUP_TYPE: "linear"
-  WARMUP_MIN_LR: 0.001
+  MAX_EPOCH: 5000
+
+TRAIN:
+  PRINT_FREQ: 20
+
+MODEL:
+  BACKBONE:
+    NAME: "ViT-B/16"
 
 TRAINER:
   BLACKVIP:
-    METHOD: "coordinator"
-    PT_BACKBONE: 'vit-mae-base'
+    METHOD: "coordinator_init"
+    PT_BACKBONE: ''
     SRC_DIM: 1568
-    E_OUT_DIM: 0
+    E_OUT_DIM: 32
     SPSA_PARAMS: [1.0,0.01,0.01,0.4,0.1]
     OPT_TYPE: "spsa-gc"
     MOMS: 0.9
     SP_AVG: 5
     P_EPS: 1.0
-
-MODEL:
-  BACKBONE:
-    NAME: "RN101"
