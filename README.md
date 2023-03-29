@@ -111,8 +111,8 @@ soon :)
 
 ### ablation study
 ```shell
-# for BlackVIP, specify {1:coordinator_backbone, 2:target_backbone, 3:spsa_alpha, 4:moms, 5:spsa_gamma, 6:spsa_c, 7:p_eps}
-sh ablation_arch.sh rn50 dino-resnet-50 0.5 0.9 0.2 0.01 0.3
+# for BlackVIP, specify {1:target_backbone, 2:spsa_alpha, 3:moms, 4:spsa_gamma, 5:spsa_c, 6:p_eps}
+sh ablation_arch_rn.sh rn50 0.5 0.9 0.2 0.01 0.3
 ```
 
 <br/>
