@@ -45,8 +45,8 @@
 <br/>
 
 ## Setup
-* Run the following commands for set the environment.
-  * Note that we slightly modifed the [Dassl.pytorch](https://github.com/KaiyangZhou/Dassl.pytorch) as my_dassl for flexible experiments.
+* Run the following commands to create the environment.
+  * Note that we slightly modifed the [Dassl.pytorch](https://github.com/KaiyangZhou/Dassl.pytorch) to my_dassl for flexible experiments.
 ```shell
 # Clone this repo
 git clone https://github.com/changdaeoh/BlackVIP.git
