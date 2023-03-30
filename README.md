@@ -74,10 +74,10 @@ pip install -r requirements.txt
 <br/>
 
 ## Data preparation
-* To prepare the following 11 datasets (adopted by [CoOp](https://github.com/KaiyangZhou/CoOp)), please follow the instruction from https://github.com/KaiyangZhou/CoOp/blob/main/DATASETS.md
+* To prepare following 11 datasets (adopted by [CoOp](https://github.com/KaiyangZhou/CoOp)), please follow the instruction from https://github.com/KaiyangZhou/CoOp/blob/main/DATASETS.md
   * **Caltech101, OxfordPets, StanfordCars, Flowers102, Food101, FGVCAircraft, SUN397, DTD, EuroSAT, UCF101, and ImageNet**
   * We use the same few-shot split of **CoOp** for above 11 datasets.
-* To prepare three datasets (adopted by [VP](https://github.com/hjbahng/visual_prompting)), the instructions are below: 
+* To prepare following three datasets (adopted by [VP](https://github.com/hjbahng/visual_prompting)), the instructions are below: 
   * **SVHN**:
     * Create a folder named `svhn/` under `$DATA`.
     * To download the dataset, run `BlackVIP/datasets/svhn_dl.py` after replacing the DATAPATH in 44 line as yours.
