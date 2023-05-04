@@ -44,7 +44,6 @@ class ZeroshotCLIP(TrainerX):
         clip_model.to(self.device)
         clip_model.eval()
 
-        self.quantized = cfg.QUANTIZED
         self.image_encoder = clip_model.visual
         self.logit_scale = clip_model.logit_scale
         

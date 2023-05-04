@@ -14,7 +14,8 @@ class LocMNIST(DatasetBase):
 
     def __init__(self, cfg):
         root = os.path.abspath(os.path.expanduser(cfg.DATASET.ROOT))
-        self.dataset_dir = os.path.join(root, self.dataset_dir)
+        tailpath = f'_r{cfg.DATASET.LOCMNIST.R_SIZE}_f{cfg.DATASET.LOCMNIST.F_SIZE}'
+        self.dataset_dir = os.path.join(root, self.dataset_dir + tailpath)
         self.image_dir = self.dataset_dir
         self.train_image_dir = os.path.join(self.dataset_dir, 'train')
         self.test_image_dir = os.path.join(self.dataset_dir, 'test')

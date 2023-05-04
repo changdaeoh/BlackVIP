@@ -89,7 +89,6 @@ class VPWB(TrainerX):
         self.register_model("prompter", self.model.prompter, self.optim, self.sched)
         self.scaler = GradScaler() if cfg.TRAINER.VPWB.PREC == "amp" else None
 
-        #! 0917 added
         self.N_params = len(torch.nn.utils.parameters_to_vector(self.model.prompter.parameters()))
         self.step = 0 
         
@@ -124,15 +123,6 @@ class VPWB(TrainerX):
 
         if (self.batch_idx + 1) == self.num_batches:
             self.update_lr()
-
-        if self.grad_check:
-            if self.step in [1, self.total_length//2, self.total_length-1]:
-                grad = torch.cat([p.grad.reshape(-1) for p in self.model.prompter.parameters()])
-                gini_w = (self.N_params - torch.arange(1, self.N_params+1).cuda() + 0.5) / self.N_params
-                gini = 1 - 2*(torch.tensor(sorted(abs(grad))).cuda()*gini_w / abs(grad).sum()).sum()
-                hoyer = (sqrt(self.N_params) - abs(grad).sum() / sqrt((grad**2).sum())) / (sqrt(self.N_params) - 1)
-                self.ginis.append(gini)
-                self.hoyers.append(hoyer)
 
         if self.cfg.use_wandb: wandb.log({'train_ep_acc':acc, 'train_ep_loss':loss.item()})
         return loss_summary
@@ -192,6 +182,15 @@ class VPWB(TrainerX):
 
             end = time.time()
 
+    def after_train(self):
+        print("Finish training")
+        # all_last_acc = self.test()
+        # Show elapsed time
+        elapsed = round(time.time() - self.time_start)
+        elapsed = str(datetime.timedelta(seconds=elapsed))
+        print(f"Elapsed: {elapsed}")
+        self.close_writer()
+        
     def after_epoch(self):
         last_epoch = (self.epoch + 1) == self.max_epoch
         do_test = not self.cfg.TEST.NO_TEST

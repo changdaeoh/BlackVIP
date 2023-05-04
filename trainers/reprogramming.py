@@ -17,7 +17,7 @@ from my_dassl.optim import build_optimizer, build_lr_scheduler
 
 from clip import clip
 from clip.simple_tokenizer import SimpleTokenizer as _Tokenizer
-from trainers.utils import FocalLoss, multiClassHingeLoss, ClassificationHead, ImageClassifier, load_clip_to_cpu
+from trainers.utils import FocalLoss, load_clip_to_cpu
 from trainers import visual_prompters
 from tqdm import tqdm
 import pdb
@@ -85,8 +85,7 @@ class BAR(TrainerX):
         self.init_lr, self.min_lr  = cfg.TRAINER.BAR.LRS
         self.sp_avg                = cfg.TRAINER.BAR.SP_AVG
         self.beta                  = cfg.TRAINER.BAR.SMOOTH
-        self.sigma                 = cfg.TRAINER.BAR.SIMGA
-        self.decay_steps_pct       = cfg.TRAINER.BAR.DECAY_STEPS
+        self.sigma                 = cfg.TRAINER.BAR.SIMGA        
         
         self.step = 0                  
         self.step_for_pdecay = 0
@@ -111,10 +110,55 @@ class BAR(TrainerX):
         print("Finish training")
         # all_last_acc = self.test()
         # Show elapsed time
-        elapsed = round(time.time() - self.time_st012art)
+        elapsed = round(time.time() - self.time_start)
         elapsed = str(datetime.timedelta(seconds=elapsed))
         print(f"Elapsed: {elapsed}")
         self.close_writer()
+
+    def forward_backward(self, batch):
+        with torch.no_grad():
+            image, label = self.parse_batch_train(batch)
+            #* learning rate scheduling
+            decay_steps = self.total_length * 0.9
+            self.step_for_pdecay = min(self.step_for_pdecay, decay_steps)
+            ak = (self.init_lr - self.min_lr) * (1 - self.step_for_pdecay / decay_steps) ** (0.9) + self.min_lr
+            
+            #* prompt parameters
+            w = torch.nn.utils.parameters_to_vector(self.model.program.parameters())
+
+            #* Randomized Gradient-Free Minimization
+            m, sigma = 0, self.sigma 
+            beta = torch.tensor(self.beta).cuda()
+            q = torch.tensor(self.sp_avg).cuda()
+            d = self.N_params
+
+            output = self.model(image)
+            loss_pivot = self.loss_fn(output, label)
+
+            ghat = torch.zeros(d).cuda()
+            for _ in range(self.sp_avg):
+                # Obtain a random direction vector
+                u = torch.normal(m, sigma, size=(d,)).cuda()
+                u = u / torch.norm(u, p=2)
+
+                # Forward evaluation 
+                w_r = w + beta * u
+                torch.nn.utils.vector_to_parameters(w_r, self.model.program.parameters())
+
+                # Gradient estimation
+                output_pt = self.model(image)
+                loss_pt = self.loss_fn(output_pt, label)
+                ghat = ghat + (d / q) * u * (loss_pt - loss_pivot) / beta
+
+            #* param update
+            w_new = w - ak * ghat
+            torch.nn.utils.vector_to_parameters(w_new, self.model.program.parameters())
+            
+            loss = loss_pivot
+            acc = compute_accuracy(output, label)[0].item()
+        loss_summary = {"loss": loss,"acc": acc,}
+        if self.cfg.use_wandb: wandb.log({'train_ep_acc':acc, 'train_ep_loss':loss.item(), 'gain_seq':ak})
+        return loss_summary
 
     def run_epoch(self):
         self.set_model_mode("train")
@@ -160,51 +204,6 @@ class BAR(TrainerX):
                 self.write_scalar("train/" + name, meter.avg, n_iter)
             self.write_scalar("train/lr", self.get_current_lr(), n_iter)
             end = time.time()
-
-    def forward_backward(self, batch, flag, epoch, method):
-        with torch.no_grad():
-            image, label = self.parse_batch_train(batch)
-            #* learning rate scheduling
-            decay_steps = self.total_length * 0.9
-            self.step_for_pdecay = min(self.step_for_pdecay, decay_steps)
-            ak = (self.init_lr - self.min_lr) * (1 - self.step_for_pdecay / decay_steps) ** (0.9) + self.min_lr
-            
-            #* prompt parameters
-            w = torch.nn.utils.parameters_to_vector(self.model.program.parameters())
-
-            #* Randomized Gradient-Free Minimization
-            m, sigma = 0, self.sigma 
-            beta = torch.tensor(self.beta).cuda()
-            q = torch.tensor(self.sp_avg).cuda()
-            d = self.N_params
-
-            output = self.model(image)
-            loss_pivot = self.loss_fn(output, label)
-
-            ghat = torch.zeros(d).cuda()
-            for _ in range(self.sp_avg):
-                # Obtain a random direction vector
-                u = torch.normal(m, sigma, size=(d,)).cuda()
-                u = u / torch.norm(u, p=2)
-
-                # Forward evaluation 
-                w_r = w + beta * u
-                torch.nn.utils.vector_to_parameters(w_r, self.model.program.parameters())
-
-                # Gradient estimation
-                output_pt = self.model(image)
-                loss_pt = self.loss_fn(output_pt, label)
-                ghat = ghat + (d / q) * u * (loss_pt - loss_pivot) / beta
-
-            #* param update
-            w_new = w - ak * ghat
-            torch.nn.utils.vector_to_parameters(w_new, self.model.program.parameters())
-            
-            loss = loss_pivot
-            acc = compute_accuracy(output, label)[0].item()
-        loss_summary = {"loss": loss,"acc": acc,}
-        if self.cfg.use_wandb: wandb.log({'train_ep_acc':acc, 'train_ep_loss':loss.item(), 'gain_seq':ak})
-        return loss_summary
 
     def after_epoch(self):
         last_epoch = (self.epoch + 1) == self.max_epoch

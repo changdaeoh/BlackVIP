@@ -90,6 +90,8 @@ pip install -r requirements.txt
     * Download `CLEVR_v1.0.zip` from https://dl.fbaipublicfiles.com/clevr/CLEVR_v1.0.zip and extract the file under $DATA.
     * Download split_mlai_CLEVR.json from [this link](https://drive.google.com/file/d/1L4DjruSBez66W_Uezyo2mN7siDORkgeO/view?usp=share_link) and put it under `$DATA/CLEVR_v1.0`.
   * We provide fixed train/val/test splits for these three datasets to ensure reproducibility and fair comparison for future work.
+* To prepare our synthetic dataset -LocMNIST-, run /datasets/mk_locmnist.py as `python mk_locmnist.py --data_root [YOUR-DATAPATH] --f_size [1 or 4]`
+* For [Biased MNIST](https://github.com/clovaai/rebias), no precedures are required. 
 
 <br/>
 
@@ -101,12 +103,34 @@ pip install -r requirements.txt
 ```shell
 # for BlackVIP, specify {1:dataset, 2:epoch, 3:moms, 4:spsa_gamma, 5:spsa_c, 6:p_eps}
 sh tl_bench.sh svhn 5000 0.9 0.2 0.005 1.0
+
+# for BAR, specify {1:dataset, 2:epoch, 3:init_lr, 4:min_lr}
+sh tl_bench.sh svhn 5000 5.0 0.1
+
+# for VP w/ SPSA-GC, specify {1:dataset, 2:epoch, 3:moms, 4:spsa_a, 5:spsa_c}
+sh tl_bench.sh svhn 5000 0.9 10.0 0.01
+
+# for VP (white-box), specify {1:dataset, 2:epoch, 3:lr}
+sh tl_bench.sh svhn 1000 40.0
+
+# for Zero-shot CLIP inference, move to 'BlackVIP/scripts/coop' and run:
+sh zeroshot_all.sh
 ```
 
 
 ### synthetic datasets
+* In `BlackVIP/scripts/method_name/`, there are three files to reproduce the results of Biased MNIST and Loc-MNIST: `synthetic_bm_easy.sh`, `synthetic_bm_hard.sh`, and `synthetic_lm.sh`
+  * Hyperparameters are also in [this docs](docs/configuration.md).
 ```shell
-soon :)
+# for BlackVIP on Loc-MNIST, specify {1:fake-digit-size, 2:moms, 3:spsa_alpha, 4:spsa_a, 5:spsa_c}
+sh synthetic_lm.sh 1 0.9 0.5 0.01 0.005  # 1:1 setting
+sh synthetic_lm.sh 4 0.95 0.5 0.02 0.01  # 1:4 seeting
+
+# for BlackVIP on Biased MNIST, specify {1:moms, 2:spsa_alpha, 3:spsa_a, 4:spsa_c}
+sh synthetic_bm_easy.sh 0.9 0.4 0.01 0.01  # spurious correlation = 0.8
+sh synthetic_bm_hard.sh 0.9 0.4 0.01 0.01  # spurious correlation = 0.9
+
+# other methods can be carried out similarly to the above.
 ```
 
 ### ablation study

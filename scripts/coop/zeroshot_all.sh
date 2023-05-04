@@ -6,9 +6,10 @@ TRAINER=ZeroshotCLIP
 
 SEED=1
 SHOTS=16
-for DATASET in eurosat
+# for CFG in rn50 rn101 vit_b32 vit_b16
+for DATASET in eurosat svhn oxford_pets clevr
 do
-for CFG in rn50 rn101 vit_b32 vit_b16
+for CFG in vit_b16
 do
 
 DIR=output/${DATASET}/ZS/shots_${SHOTS}/${TRAINER}/${CFG}/seed${SEED}
