@@ -130,7 +130,7 @@ sh synthetic_lm.sh 4 0.95 0.5 0.02 0.01  # 1:4 seeting
 sh synthetic_bm_easy.sh 0.9 0.4 0.01 0.01  # spurious correlation = 0.8
 sh synthetic_bm_hard.sh 0.9 0.4 0.01 0.01  # spurious correlation = 0.9
 
-# other methods can be carried out similarly to the above.
+# other methods can be runned similarly to the above.
 ```
 
 ### ablation study
