@@ -150,11 +150,13 @@ For any questions, discussions, and proposals, please contact to `changdae.oh@uo
 ## Citation
 If you use our code in your research, please kindly consider citing:
 ```bibtex
-@inproceedings{oh2023blackvip,
-  title={BlackVIP: Black-Box Visual Prompting for Robust Transfer Learning},
-  author={Oh, Changdae and Hwang, Hyeji and Lee, Hee-young and Lim, YongTaek, and Jung, Geunyoung, and Jung, Jiyoung, and Choi, Hosik, and Song, Kyungwoo},
-  booktitle={IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year={2023}
+@InProceedings{Oh_2023_CVPR,
+    author    = {Oh, Changdae and Hwang, Hyeji and Lee, Hee-young and Lim, YongTaek and Jung, Geunyoung and Jung, Jiyoung and Choi, Hosik and Song, Kyungwoo},
+    title     = {BlackVIP: Black-Box Visual Prompting for Robust Transfer Learning},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2023},
+    pages     = {24224-24235}
 }
 ```
 
