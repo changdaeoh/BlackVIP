@@ -108,27 +108,27 @@ class VPOUR(TrainerX):
     def forward_backward(self, batch):
         with torch.no_grad():
             image, label = self.parse_batch_train(batch)
-            with autocast(): #! for fast training
-                #* SPSA scheduling
-                ak = self.a/((self.step + self.o)**self.alpha)
-                ck = self.c/(self.step**self.gamma)
-                
-                # gradient estimation
-                w = torch.nn.utils.parameters_to_vector(self.model.prompter.parameters())
-                ghat, loss, acc = self.spsa_grad_estimate_bi(w, image, label, ck)
-    
-                if self.opt_type == 'spsa-gc':
-                    if self.step > 1:  self.m1 = self.b1*self.m1 + ghat
-                    else:              self.m1 = ghat
-                    accum_ghat = ghat + self.b1*self.m1
-                elif self.opt_type == 'spsa':
-                    accum_ghat = ghat
-                else:
-                    raise ValueError
+            
+            #* SPSA scheduling
+            ak = self.a/((self.step + self.o)**self.alpha)
+            ck = self.c/(self.step**self.gamma)
+            
+            # gradient estimation
+            w = torch.nn.utils.parameters_to_vector(self.model.prompter.parameters())
+            ghat, loss, acc = self.spsa_grad_estimate_bi(w, image, label, ck)
 
-                #* param update
-                w_new = w - ak * accum_ghat
-                torch.nn.utils.vector_to_parameters(w_new, self.model.prompter.parameters())
+            if self.opt_type == 'spsa-gc':
+                if self.step > 1:  self.m1 = self.b1*self.m1 + ghat
+                else:              self.m1 = ghat
+                accum_ghat = ghat + self.b1*self.m1
+            elif self.opt_type == 'spsa':
+                accum_ghat = ghat
+            else:
+                raise ValueError
+
+            #* param update
+            w_new = w - ak * accum_ghat
+            torch.nn.utils.vector_to_parameters(w_new, self.model.prompter.parameters())
             
         loss_summary = {"loss": loss,"acc": acc,}
         if self.cfg.use_wandb: wandb.log({'train_ep_acc':acc, 'train_ep_loss':loss.item(), 'gain_seq':ak})
